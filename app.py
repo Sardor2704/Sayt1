@@ -4,28 +4,32 @@ from duckduckgo_search import DDGS
 
 app = Flask(__name__, template_folder='templates')
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html', results=[], query="")
-
-@app.route('/search', methods=['POST'])
-def search():
-    query = request.form.get('query')
     results = []
-    if query:
-        try:
-            # Qidiruvni amalga oshirish
-            with DDGS() as ddgs:
-                results_gen = ddgs.text(query, max_results=15)
-                for r in results_gen:
-                    results.append({
-                        'title': r['title'],
-                        'link': r['href'],
-                        'snippet': r.get('body', r.get('snippet', ''))
-                    })
-        except Exception as e:
-            print(f"Xato yuz berdi: {e}")
-            
+    query = ""
+    if request.method == 'POST':
+        query = request.form.get('query')
+        if query:
+            try:
+                # DDGS orqali universal qidiruv
+                with DDGS() as ddgs:
+                    # 'wt-wt' - barcha regionlar va tillar bo'yicha qidiradi (Uz, Ru, En)
+                    res_gen = ddgs.text(
+                        query, 
+                        region='wt-wt', 
+                        safesearch='off', 
+                        max_results=25
+                    )
+                    for r in res_gen:
+                        results.append({
+                            'title': r['title'],
+                            'href': r['href'],
+                            'body': r.get('body', '')
+                        })
+            except Exception as e:
+                print(f"Xato: {e}")
+    
     return render_template('index.html', results=results, query=query)
 
 if __name__ == "__main__":
