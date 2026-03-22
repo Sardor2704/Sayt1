@@ -19,11 +19,12 @@
             </h1>
             <p class="text-gray-400 text-lg">Hamma narsani (PDF, MP4, 18+, Excel) qidirib topish tizimi</p>
         </div>
-
-        <form action="/" method="GET" class="max-w-3xl mx-auto mb-10 bg-slate-800 p-6 rounded-2xl shadow-2xl border border-slate-700">
-            <div class="flex flex-col md:flex-row gap-3">
-                <input type="text" name="q" value="{{ query or '' }}" 
-                       placeholder="Nima qidiramiz? (masalan: Kino, Kitob...)" 
-                       class="w-full p-4 rounded-xl bg-slate-700 border-none text-white focus:ring-2 focus:ring-blue-500 outline-none">
-                <button type="submit" class="bg-blue-600 hover:bg
+        
+<form action="/search" method="POST" class="mt-8">
+    <input type="text" name="query" placeholder="Sevgi istirobi" 
+           class="w-full p-4 rounded-lg bg-gray-800 text-white border border-gray-700">
+    <button type="submit" class="mt-4 w-full bg-blue-600 p-3 rounded-lg font-bold">
+        Qidirish
+    </button>
+</form>
 
