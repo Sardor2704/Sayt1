@@ -12,23 +12,17 @@ def index():
         query = request.form.get('query')
         if query:
             try:
-                # DDGS orqali universal qidiruv
                 with DDGS() as ddgs:
-                    # 'wt-wt' - barcha regionlar va tillar bo'yicha qidiradi (Uz, Ru, En)
+                    # 'wt-wt' barcha tillar va hududlarni qamrab oladi
                     res_gen = ddgs.text(
                         query, 
                         region='wt-wt', 
                         safesearch='off', 
-                        max_results=25
+                        max_results=20
                     )
-                    for r in res_gen:
-                        results.append({
-                            'title': r['title'],
-                            'href': r['href'],
-                            'body': r.get('body', '')
-                        })
+                    results = [r for r in res_gen]
             except Exception as e:
-                print(f"Xato: {e}")
+                print(f"Qidiruvda xato: {e}")
     
     return render_template('index.html', results=results, query=query)
 
