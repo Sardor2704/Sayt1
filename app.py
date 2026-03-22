@@ -14,18 +14,17 @@ def search():
     results = []
     if query:
         try:
+            # Qidiruvni amalga oshirish
             with DDGS() as ddgs:
-                # Oddiyroq va barqaror qidiruv usuli
-                ddgs_gen = ddgs.text(query, region='wt-wt', safesearch='off', timelimit='y')
-                for i, r in enumerate(ddgs_gen):
-                    if i >= 15: break  # Top 15 natija
+                results_gen = ddgs.text(query, max_results=15)
+                for r in results_gen:
                     results.append({
                         'title': r['title'],
                         'link': r['href'],
-                        'snippet': r['body']
+                        'snippet': r.get('body', r.get('snippet', ''))
                     })
         except Exception as e:
-            print(f"Xato: {e}")
+            print(f"Xato yuz berdi: {e}")
             
     return render_template('index.html', results=results, query=query)
 
