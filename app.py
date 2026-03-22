@@ -12,17 +12,20 @@ def index():
         query = request.form.get('query')
         if query:
             try:
+                # Qidiruv parametrlarini maksimal darajada soddalashtiramiz
                 with DDGS() as ddgs:
-                    # 'wt-wt' barcha tillar va hududlarni qamrab oladi
-                    res_gen = ddgs.text(
-                        query, 
-                        region='wt-wt', 
-                        safesearch='off', 
-                        max_results=20
-                    )
-                    results = [r for r in res_gen]
+                    # 'wt-wt' dunyo bo'ylab, 'max_results' sonini kamaytirib ko'ramiz (tezlik uchun)
+                    ddgs_gen = ddgs.text(query, region='wt-wt', safesearch='off')
+                    for i, r in enumerate(ddgs_gen):
+                        results.append({
+                            'title': r['title'],
+                            'href': r['href'],
+                            'body': r['body']
+                        })
+                        if i >= 15: break # 15 ta natija yetarli
             except Exception as e:
-                print(f"Qidiruvda xato: {e}")
+                print(f"Xatolik yuz berdi: {e}")
+                # Agar DuckDuckGo bloklasa, bu xato loglarda ko'rinadi
     
     return render_template('index.html', results=results, query=query)
 
