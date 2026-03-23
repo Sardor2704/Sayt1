@@ -1,14 +1,13 @@
-import os
-import requests
 from flask import Flask, render_template, request
+import requests
 
-# Vercel-da templates papkasini topish uchun yo'l ko'rsatamiz
 app = Flask(__name__, template_folder='../templates')
 
-def search_wiki(query):
+@app.route('/')
+def index():
+    query = request.args.get('query', '')
     results = []
-    try:
-        # Wikipedia API (O'zbek, Rus va Ingliz tillari uchun)
+    if query:
         url = "https://uz.wikipedia.org/w/api.php"
         params = {
             "action": "query",
@@ -17,28 +16,13 @@ def search_wiki(query):
             "format": "json",
             "utf8": 1
         }
-        response = requests.get(url, params=params, timeout=5)
-        data = response.json()
-        
+        data = requests.get(url, params=params).json()
         for item in data.get('query', {}).get('search', []):
             results.append({
                 'title': item['title'],
-                'href': f"https://uz.wikipedia.org/wiki/{item['title'].replace(' ', '_')}",
-                'body': item['snippet'].replace('<span class="searchmatch">', '').replace('</span>', '') + "..."
+                'body': item['snippet']
             })
-    except Exception as e:
-        print(f"Xato: {e}")
-    return results
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    results = []
-    query = ""
-    if request.method == 'POST':
-        query = request.form.get('query', '')
-        if query:
-            results = search_wiki(query)
     return render_template('index.html', results=results, query=query)
 
-# Vercel serverless function sifatida ishlashi uchun zarur
+# Vercel uchun juda muhim qator
 app = app
